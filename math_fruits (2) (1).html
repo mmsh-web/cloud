@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Math Fruits 🍓</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;700&display=swap">
+<style>
+:root{--bg:#0f1410;--card:#1a221b;--lime:#b6f23a;--white:#f5f8f0;--mute:#8fa08a;--bad:#ff6b6b}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--white);font-family:Vazirmatn,Tahoma,"Segoe UI",sans-serif;display:flex;justify-content:center;padding:16px}
+.app{width:100%;max-width:420px}
+.card{background:var(--card);border-radius:24px;padding:20px;margin-bottom:14px}
+h1{margin:0 0 4px;font-size:28px;color:var(--lime)}
+p.sub{margin:0 0 14px;color:var(--mute);font-size:14px}
+input{width:100%;padding:12px 14px;border-radius:14px;border:2px solid #2c382d;background:#0f1410;color:var(--white);font:inherit;font-size:16px}
+input:focus{outline:none;border-color:var(--lime)}
+button{font:inherit;cursor:pointer;border:0;border-radius:16px}
+button:focus-visible{outline:3px solid var(--white)}
+.primary{width:100%;padding:14px;background:var(--lime);color:#10200a;font-size:18px;font-weight:bold;margin-top:12px}
+.ghost{width:100%;padding:12px;background:transparent;color:var(--mute);margin-top:8px;border:2px solid #2c382d}
+.avatars{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:12px 0}
+.avatars button{font-size:26px;padding:8px 0;background:#0f1410;border:2px solid transparent}
+.avatars button.on{border-color:var(--lime);background:#24300f}
+.hidden{display:none}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.score{font-size:22px;font-weight:bold;color:var(--lime)}
+.bar{height:12px;background:#0f1410;border-radius:99px;overflow:hidden;margin-bottom:18px}
+.fill{height:100%;width:100%;background:var(--lime);border-radius:99px}
+.q{direction:ltr;text-align:center;font-size:58px;font-weight:bold;margin:8px 0 18px;letter-spacing:2px}
+.pad{direction:ltr;display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.pad button{padding:16px 0;font-size:24px;font-weight:bold;background:#0f1410;color:var(--white);border:2px solid #2c382d}
+.pad button:active{background:var(--lime);color:#10200a}
+.msg{text-align:center;min-height:24px;margin-top:10px;font-size:15px}
+.bad{color:var(--bad)}
+.lb{list-style:none;margin:0;padding:0}
+.lb li{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #2c382d}
+.lb li:last-child{border:0}
+.big{font-size:44px;text-align:center;margin:6px 0}
+.mute{position:fixed;top:12px;left:12px;width:44px;height:44px;font-size:22px;background:var(--card);color:var(--white);border:2px solid #2c382d;border-radius:50%;z-index:5}
+#fx{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:50}
+@keyframes shake{0%,100%{transform:translate(0,0)}20%{transform:translate(-7px,4px)}40%{transform:translate(7px,-4px)}60%{transform:translate(-4px,-3px)}80%{transform:translate(4px,3px)}}
+.app.shake{animation:shake .35s}
+.credit{text-align:center;color:var(--mute);font-size:13px;direction:ltr;margin:6px 0 0}
+/* لودینگ */
+.splash{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;opacity:1;transition:opacity .5s}
+.splash.out{opacity:0;pointer-events:none}
+.splash svg{width:140px;height:140px}
+.splash .brand{font-size:46px;font-weight:300;color:var(--white);margin-top:12px;letter-spacing:1px;direction:ltr}
+.splash .tag{font-size:22px;font-weight:bold;color:var(--lime);letter-spacing:4px;margin-top:2px;direction:ltr}
+.splash .loadbar{width:140px;height:6px;background:#1a221b;border-radius:99px;overflow:hidden;margin-top:26px}
+.splash .loadfill{height:100%;width:0;background:var(--lime);border-radius:99px;animation:load 4.2s ease-in-out forwards}
+.splash .sq1,.splash .sq2,.splash .brand,.splash .tag{animation:fadein .9s ease both}
+.splash .sq2{animation-delay:.5s}
+.splash .brand{animation-delay:1s}
+.splash .tag{animation-delay:1.7s}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+@keyframes load{from{width:0}to{width:100%}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}.splash *{animation:none!important}.splash .loadfill{width:100%}.app.shake{animation:none}}
+</style>
+</head>
+<body>
+<!-- لودینگ اولیه -->
+<div class="splash" id="splash">
+  <svg viewBox="113 43 178 178" role="img" aria-label="MM Sh">
+    <rect x="125" y="55" width="152" height="152" rx="28" fill="#f0f0f0" stroke="#000" stroke-width="7"/>
+    <rect class="sq1" x="121" y="51" width="80" height="80" rx="14" fill="#b6f23a"/>
+    <rect class="sq2" x="202" y="131" width="80" height="80" rx="14" fill="#b6f23a"/>
+  </svg>
+  <div class="brand">MM Sh</div>
+  <div class="tag">AI Games</div>
+  <div class="loadbar"><div class="loadfill"></div></div>
+</div>
+<canvas id="fx"></canvas>
+<button class="mute" id="muteBtn" type="button" aria-label="خاموش/روشن کردن صدا">🔊</button>
+<div class="app">
+
+  <!-- صفحه پروفایل -->
+  <div id="screenProfile" class="card">
+    <h1>Math Fruits 🍓</h1>
+    <p class="sub">اسمت رو بنویس و یه میوه انتخاب کن.</p>
+    <input id="nameInput" maxlength="16" placeholder="اسم نمایشی" autocomplete="off">
+    <div class="avatars" id="avatars"></div>
+    <button class="primary" id="saveProfile">ذخیره و ادامه</button>
+    <div class="msg bad" id="profileMsg"></div>
+  </div>
+
+  <!-- صفحه اصلی -->
+  <div id="screenHome" class="card hidden">
+    <div class="big" id="homeAvatar"></div>
+    <h1 id="homeName" style="text-align:center"></h1>
+    <p class="sub" style="text-align:center">بهترین امتیاز: <b id="homeBest">0</b></p>
+    <button class="primary" id="startBtn">شروع بازی</button>
+    <button class="ghost" id="editBtn">تغییر پروفایل</button>
+  </div>
+
+  <!-- صفحه بازی -->
+  <div id="screenGame" class="card hidden">
+    <div class="top"><span id="gameWho"></span><span class="score">امتیاز: <span id="score">0</span></span></div>
+    <div class="bar"><div class="fill" id="fill"></div></div>
+    <div class="q" id="question"></div>
+    <div class="pad" id="pad"></div>
+    <div class="msg" id="gameMsg"></div>
+  </div>
+
+  <!-- صفحه پایان -->
+  <div id="screenOver" class="card hidden">
+    <h1 style="text-align:center">بازی تموم شد</h1>
+    <p class="sub" style="text-align:center" id="overReason"></p>
+    <div class="big" id="overScore"></div>
+    <p class="sub" style="text-align:center" id="overBest"></p>
+    <button class="primary" id="againBtn">دوباره بازی کن</button>
+    <button class="ghost" id="homeBtn">صفحه اصلی</button>
+  </div>
+
+  <!-- جدول امتیازها -->
+  <div class="card" id="boardCard">
+    <h1 style="font-size:20px">جدول امتیازها</h1>
+    <ul class="lb" id="board"></ul>
+  </div>
+
+  <p class="credit" id="credit">Made by MM Sh with AI</p>
+
+</div>
+
+<script>
+(function () {
+  var FRUITS = ["🍎","🍊","🍋","🍉","🍇","🍓","🍒","🍑","🍍","🥝","🍌","🍐"];
+  var TIME_LIMIT = 3000; // مدت زمان هر سؤال (میلی‌ثانیه)
+  var KEY = "mathFruitsPlayers";
+
+  // ---------- ذخیره‌سازی (localStorage) ----------
+  function load() {
+    try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; }
+  }
+  function save(data) {
+    try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {}
+  }
+  var players = load();            // { name: {avatar, best} }
+  var me = null;                   // اسم بازیکن فعلی
+  try { me = localStorage.getItem("mathFruitsMe"); } catch (e) {}
+  if (me && !players[me]) me = null;
+
+  // ---------- صدا و آهنگ (با Web Audio، بدون فایل صوتی) ----------
+  var Sound = (function () {
+    var ctx = null, master = null, timer = null, step = 0, nextTime = 0, muted = false;
+    try { muted = localStorage.getItem("mathFruitsMuted") === "1"; } catch (e) {}
+    // آهنگ ۳۲ قدمی (نت‌های MIDI؛ ۰ یعنی سکوت) و خط بیس
+    var MEL = [72,76,79,76, 74,77,81,77, 72,76,79,84, 83,79,76,79,
+               69,72,76,72, 71,74,77,74, 72,76,79,76, 74,71,67,0];
+    var BASS = [48,53,48,55, 45,47,48,43];
+    var STEP = 0.2; // طول هر قدم (ثانیه)
+
+    function freq(m) { return 440 * Math.pow(2, (m - 69) / 12); }
+
+    function ensure() {
+      if (!ctx) {
+        var AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return false;
+        ctx = new AC();
+        master = ctx.createGain();
+        master.gain.value = muted ? 0 : 1;
+        master.connect(ctx.destination);
+      }
+      if (ctx.state === "suspended") ctx.resume();
+      return true;
+    }
+
+    function tone(type, f, t, dur, vol) {
+      var o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = type; o.frequency.value = f;
+      g.gain.setValueAtTime(vol, t);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g); g.connect(master);
+      o.start(t); o.stop(t + dur + 0.02);
+    }
+
+    function schedule() {
+      while (nextTime < ctx.currentTime + 0.3) {
+        var m = MEL[step];
+        if (m) tone("square", freq(m), nextTime, STEP * 0.9, 0.05);
+        if (step % 4 === 0) tone("triangle", freq(BASS[step / 4]), nextTime, STEP * 3.6, 0.12);
+        nextTime += STEP;
+        step = (step + 1) % MEL.length;
+      }
+    }
+
+    return {
+      startMusic: function () {
+        if (!ensure()) return;
+        step = 0; nextTime = ctx.currentTime + 0.05;
+        clearInterval(timer);
+        timer = setInterval(schedule, 100);
+      },
+      stopMusic: function () { clearInterval(timer); timer = null; },
+      right: function () {
+        if (!ctx) return;
+        var t = ctx.currentTime;
+        tone("sine", freq(84), t, 0.12, 0.15);
+        tone("sine", freq(91), t + 0.07, 0.15, 0.15);
+      },
+      wrong: function () {
+        if (!ctx) return;
+        tone("sawtooth", 140, ctx.currentTime, 0.25, 0.12);
+      },
+      splat: function () {
+        if (!ctx) return;
+        var t = ctx.currentTime, n = Math.floor(ctx.sampleRate * 0.25);
+        var buf = ctx.createBuffer(1, n, ctx.sampleRate), d = buf.getChannelData(0);
+        for (var i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n);
+        var src = ctx.createBufferSource(), g = ctx.createGain(), f = ctx.createBiquadFilter();
+        f.type = "lowpass"; f.frequency.value = 900; g.gain.value = 0.5;
+        src.buffer = buf; src.connect(f); f.connect(g); g.connect(master); src.start(t);
+        tone("sine", 90, t, 0.2, 0.3);
+      },
+      win: function () {
+        if (!ctx) return;
+        var t = ctx.currentTime, notes = [72, 76, 79, 84, 88];
+        for (var i = 0; i < notes.length; i++) tone("sine", freq(notes[i]), t + i * 0.09, 0.25, 0.15);
+      },
+      over: function () {
+        if (!ctx) return;
+        var t = ctx.currentTime, notes = [67, 64, 60, 55];
+        for (var i = 0; i < notes.length; i++) tone("triangle", freq(notes[i]), t + i * 0.18, 0.3, 0.18);
+      },
+      toggle: function () {
+        muted = !muted;
+        try { localStorage.setItem("mathFruitsMuted", muted ? "1" : "0"); } catch (e) {}
+        if (master) master.gain.value = muted ? 0 : 1;
+        return muted;
+      },
+      isMuted: function () { return muted; }
+    };
+  })();
+
+  // ---------- کمک‌ها ----------
+  function $(id) { return document.getElementById(id); }
+  function show(id) {
+    ["screenProfile","screenHome","screenGame","screenOver"].forEach(function (s) {
+      $(s).classList.toggle("hidden", s !== id);
+    });
+    $("boardCard").classList.toggle("hidden", id === "screenGame");
+    $("credit").classList.toggle("hidden", id === "screenGame");
+    if (id === "screenHome" || id === "screenOver" || id === "screenProfile") renderBoard();
+  }
+  function rand(n) { return Math.floor(Math.random() * (n + 1)); } // 0..n
+
+  // ---------- افکت‌های میوه‌ای (روی یک بوم Canvas تمام‌صفحه) ----------
+  var Effects = (function () {
+    var cv = $("fx"), c = cv.getContext("2d");
+    var W = 0, H = 0, dpr = 1, raf = 0, last = 0;
+    var parts = [], blobs = [], drips = [], fruit = null, scene = null;
+    var reduce = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    // رنگ آب هر میوه
+    var COLORS = { "🍎":"#e53935", "🍊":"#fb8c00", "🍋":"#fdd835", "🍉":"#ff2d55",
+                   "🍇":"#8e24aa", "🍓":"#ff3b5c", "🍒":"#c2185b", "🍑":"#ff8a65",
+                   "🍍":"#ffca28", "🥝":"#8bc34a", "🍌":"#ffe14d", "🍐":"#c0ca33" };
+    function colorOf(e) { return COLORS[e] || "#e53935"; }
+    function rnd(a, b) { return a + Math.random() * (b - a); }
+    function now() { return window.performance && performance.now ? performance.now() : Date.now(); }
+    function size() {
+      dpr = window.devicePixelRatio || 1;
+      W = window.innerWidth; H = window.innerHeight;
+      cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    }
+    window.addEventListener("resize", function () { if (raf) size(); });
+
+    // ذره‌ها: قطره‌ها و میوه‌های کوچک که پرواز می‌کنن
+    function add(p) { p.age = p.age || 0; parts.push(p); }
+
+    // لکه‌ی آب میوه (یه شکل نامنظم و صاف)
+    function makeBlob(x, y, r, color, n) {
+      var rs = [];
+      for (var i = 0; i < n; i++) rs.push(r * rnd(0.72, 1.25));
+      return { x: x, y: y, r: r, n: n, rs: rs, color: color, rot: rnd(0, 6.28) };
+    }
+    function mid(p, q) { return [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2]; }
+    function drawBlob(b) {
+      var n = b.n, pt = [], i, a, e;
+      for (i = 0; i < n; i++) {
+        a = b.rot + i / n * 6.2832;
+        pt.push([b.x + Math.cos(a) * b.rs[i], b.y + Math.sin(a) * b.rs[i]]);
+      }
+      var st = mid(pt[n - 1], pt[0]);
+      c.beginPath(); c.moveTo(st[0], st[1]);
+      for (i = 0; i < n; i++) {
+        e = mid(pt[i], pt[(i + 1) % n]);
+        c.quadraticCurveTo(pt[i][0], pt[i][1], e[0], e[1]);
+      }
+      c.closePath(); c.fillStyle = b.color; c.fill();
+      if (b.r > 20) { // برق کوچیک برای حالت آبدار
+        c.globalAlpha = 0.2; c.fillStyle = "#fff"; c.beginPath();
+        c.arc(b.x - b.r * 0.3, b.y - b.r * 0.3, b.r * 0.3, 0, 6.2832); c.fill();
+        c.globalAlpha = 1;
+      }
+    }
+    function emoji(e, x, y, sz, rot, sx, sy, al) {
+      c.save(); c.globalAlpha = al; c.translate(x, y); c.rotate(rot); c.scale(sx, sy);
+      c.font = sz + "px 'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif";
+      c.textAlign = "center"; c.textBaseline = "middle"; c.fillText(e, 0, 0);
+      c.restore();
+    }
+    function wiper(x) { // تیغه‌ی پاک‌کن
+      var g = c.createLinearGradient(x - 90, 0, x, 0);
+      g.addColorStop(0, "rgba(255,255,255,0)"); g.addColorStop(1, "rgba(255,255,255,0.35)");
+      c.fillStyle = g; c.fillRect(x - 90, 0, 90, H);
+      c.fillStyle = "#b6f23a"; c.fillRect(x - 4, 0, 8, H);
+    }
+
+    function hit() { // لحظه‌ی برخورد میوه
+      var s = scene, x = fruit.x, y = s.ty, R = Math.min(W, H) * 0.24, i, a, d;
+      blobs.push(makeBlob(x, y, R, s.color, 14));
+      for (i = 0; i < 16; i++) {
+        a = rnd(0, 6.28); d = rnd(R * 0.8, R * 1.6);
+        blobs.push(makeBlob(x + Math.cos(a) * d, y + Math.sin(a) * d * 0.8, rnd(6, 26), s.color, 8));
+      }
+      for (i = 0; i < 40; i++) { // قطره‌هایی که می‌پرن و جایی که می‌افتن لکه می‌شن
+        a = rnd(0, 6.28); d = rnd(250, 950);
+        add({ x: x, y: y, vx: Math.cos(a) * d, vy: Math.sin(a) * d, g: 1800,
+              life: rnd(0.25, 0.6), size: rnd(4, 10), color: s.color, rot: 0, vr: 0, stick: true });
+      }
+      for (i = 0; i < 6; i++) { // شره‌ی آب میوه روی صفحه
+        drips.push({ x: x + rnd(-R * 0.7, R * 0.7), y: y, w: rnd(8, 16), len: 0,
+                     max: rnd(H * 0.12, H * 0.38), v: rnd(70, 160) });
+      }
+      if (s.onHit) s.onHit();
+      var app = document.querySelector(".app");
+      app.classList.add("shake");
+      setTimeout(function () { app.classList.remove("shake"); }, 400);
+    }
+
+    function finish() { // صفحه تمیز شد، برو سراغ صفحه‌ی امتیاز
+      var d = scene && scene.done;
+      scene = null; parts = []; blobs = []; drips = []; fruit = null;
+      c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, W, H);
+      if (d) d();
+    }
+
+    function step(dt) {
+      var s = scene, i;
+      s.t += dt;
+      if (s.kind === "burst") { if (s.t > 0.3 && !parts.length) finish(); return; }
+      if (s.phase === "fall") {
+        fruit.vy += 3200 * dt; fruit.y += fruit.vy * dt; fruit.rot += 7 * dt;
+        if (fruit.y >= s.ty) { fruit.y = s.ty; hit(); s.phase = "hold"; s.t = 0; }
+      } else if (s.phase === "hold") {
+        for (i = 0; i < drips.length; i++) if (drips[i].len < drips[i].max) drips[i].len += drips[i].v * dt;
+        if (s.t > 1.5) { s.phase = "wipe"; s.t = 0; s.x = 0; }
+      } else {
+        s.x = W * 1.15 * Math.min(1, s.t / 0.8);
+        if (s.t >= 0.8) finish();
+      }
+    }
+
+    function update(dt) {
+      var i, p;
+      for (i = parts.length - 1; i >= 0; i--) {
+        p = parts[i];
+        if (p.age < 0) { p.age += dt; continue; } // هنوز نوبتش نشده
+        p.vy += p.g * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.rot += p.vr * dt; p.age += dt;
+        if (p.age >= p.life) {
+          if (p.stick) blobs.push(makeBlob(p.x, p.y, p.size * 1.3, p.color, 8));
+          parts.splice(i, 1);
+        }
+      }
+      if (scene) step(dt);
+    }
+
+    function draw() {
+      var i, p, s = scene;
+      c.setTransform(dpr, 0, 0, dpr, 0, 0);
+      c.clearRect(0, 0, W, H);
+      if (s && s.kind === "splat") {
+        if (s.phase === "fall") {
+          emoji(s.emoji, fruit.x, fruit.y, 90, fruit.rot, 1, 1, 1);
+        } else {
+          c.save();
+          if (s.phase === "wipe") { c.beginPath(); c.rect(s.x, 0, W - s.x + 1, H); c.clip(); }
+          c.lineCap = "round"; c.strokeStyle = s.color;
+          for (i = 0; i < drips.length; i++) {
+            c.lineWidth = drips[i].w; c.beginPath();
+            c.moveTo(drips[i].x, drips[i].y); c.lineTo(drips[i].x, drips[i].y + drips[i].len); c.stroke();
+          }
+          for (i = 0; i < blobs.length; i++) drawBlob(blobs[i]);
+          emoji(s.emoji, fruit.x, s.ty, 110, 0, 1.5, 0.35, 0.95); // میوه‌ی له‌شده
+          c.restore();
+          if (s.phase === "wipe") wiper(s.x);
+        }
+      }
+      for (i = 0; i < parts.length; i++) {
+        p = parts[i];
+        if (p.age < 0) continue;
+        if (p.emoji) {
+          emoji(p.emoji, p.x, p.y, p.size, p.rot, 1, 1, p.fade ? Math.max(0, 1 - Math.pow(p.age / p.life, 2)) : 1);
+        } else {
+          c.fillStyle = p.color; c.beginPath(); c.arc(p.x, p.y, p.size, 0, 6.2832); c.fill();
+        }
+      }
+    }
+
+    function loop(t) {
+      var dt = Math.max(0, Math.min(0.05, (t - last) / 1000)); last = t;
+      update(dt); draw();
+      if (parts.length || scene) raf = requestAnimationFrame(loop);
+      else { raf = 0; c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, W, H); }
+    }
+    function start() {
+      if (!raf) { size(); last = now(); raf = requestAnimationFrame(loop); }
+    }
+    function qpos() { var r = $("question").getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }
+
+    return {
+      // جواب درست: چند میوه‌ی کوچیک بالا می‌پرن
+      pop: function (e) {
+        if (reduce) return;
+        var q = qpos(), i;
+        for (i = 0; i < 3; i++) add({ emoji: e, x: q.x + rnd(-60, 60), y: q.y, vx: rnd(-90, 90), vy: rnd(-420, -300),
+                                      g: 600, life: 0.8, size: rnd(24, 34), rot: 0, vr: rnd(-3, 3), fade: true });
+        start();
+      },
+      // جواب غلط: چند قطره آب میوه
+      wrong: function (e) {
+        if (reduce) return;
+        var q = qpos(), col = colorOf(e), i;
+        for (i = 0; i < 14; i++) add({ x: q.x, y: q.y, vx: rnd(-350, 350), vy: rnd(-450, -100), g: 1600,
+                                       life: rnd(0.3, 0.6), size: rnd(3, 8), color: col, rot: 0, vr: 0 });
+        start();
+      },
+      // باخت: میوه می‌افته، می‌پاشه، بعد صفحه تمیز می‌شه
+      splat: function (e, done, onHit) {
+        if (reduce) { if (onHit) onHit(); done(); return; }
+        parts = []; blobs = []; drips = [];
+        start();
+        fruit = { x: W * rnd(0.3, 0.7), y: -60, vy: 400, rot: 0 };
+        scene = { kind: "splat", phase: "fall", t: 0, emoji: e, color: colorOf(e), ty: H * 0.42, done: done, onHit: onHit };
+      },
+      // رکورد جدید: بارون میوه
+      burst: function (e, done) {
+        if (reduce) { done(); return; }
+        parts = []; blobs = []; drips = [];
+        start();
+        var i, g = 2200, vy, list = [e, e, e].concat(FRUITS);
+        for (i = 0; i < 44; i++) {
+          vy = -Math.sqrt(2 * g * H * rnd(0.45, 0.95));
+          add({ emoji: list[Math.floor(Math.random() * list.length)], x: W / 2 + rnd(-W * 0.3, W * 0.3), y: H + 30,
+                vx: rnd(-260, 260), vy: vy, g: g, life: 2 * (-vy) / g, size: rnd(30, 54),
+                rot: rnd(0, 6), vr: rnd(-8, 8), age: -rnd(0, 0.4) });
+        }
+        scene = { kind: "burst", t: 0, done: done };
+      }
+    };
+  })();
+
+  // ---------- پروفایل ----------
+  var chosen = FRUITS[0];
+  function renderAvatars() {
+    var box = $("avatars");
+    box.innerHTML = "";
+    FRUITS.forEach(function (f) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = f;
+      if (f === chosen) b.className = "on";
+      b.onclick = function () { chosen = f; renderAvatars(); };
+      box.appendChild(b);
+    });
+  }
+  $("saveProfile").onclick = function () {
+    var name = $("nameInput").value.replace(/^\s+|\s+$/g, "");
+    if (!name) { $("profileMsg").textContent = "اسم رو وارد کن."; return; }
+    if (players[name] && name !== me) { $("profileMsg").textContent = "این اسم قبلاً استفاده شده."; return; }
+    var best = 0;
+    if (me && players[me]) { best = players[me].best; if (name !== me) delete players[me]; }
+    players[name] = { avatar: chosen, best: best };
+    me = name;
+    save(players);
+    try { localStorage.setItem("mathFruitsMe", me); } catch (e) {}
+    $("profileMsg").textContent = "";
+    goHome();
+  };
+  $("editBtn").onclick = function () {
+    $("nameInput").value = me;
+    chosen = players[me].avatar;
+    renderAvatars();
+    show("screenProfile");
+  };
+
+  function goHome() {
+    $("homeAvatar").textContent = players[me].avatar;
+    $("homeName").textContent = me;
+    $("homeBest").textContent = players[me].best;
+    show("screenHome");
+  }
+  $("homeBtn").onclick = goHome;
+
+  // ---------- جدول امتیاز ----------
+  function renderBoard() {
+    var list = Object.keys(players).map(function (n) {
+      return { name: n, avatar: players[n].avatar, best: players[n].best };
+    }).sort(function (a, b) { return b.best - a.best; }).slice(0, 5);
+    var ul = $("board");
+    ul.innerHTML = "";
+    if (!list.length) { ul.innerHTML = "<li><span>هنوز بازیکنی نیست.</span></li>"; return; }
+    list.forEach(function (p) {
+      var li = document.createElement("li");
+      var a = document.createElement("span"); a.textContent = p.avatar + " " + p.name;
+      var b = document.createElement("b"); b.textContent = p.best;
+      li.appendChild(a); li.appendChild(b); ul.appendChild(li);
+    });
+  }
+
+  // ---------- بازی ----------
+  var score, answer, deadline, raf, playing;
+
+  function newQuestion() {
+    var a, b, op;
+    if (Math.random() < 0.5) { // جمع: جواب حداکثر ۹
+      a = rand(9); b = rand(9 - a); op = "+"; answer = a + b;
+    } else {                   // تفریق: جواب منفی نمی‌شه
+      a = rand(9); b = rand(a); op = "−"; answer = a - b;
+    }
+    $("question").textContent = a + " " + op + " " + b + " = ?";
+    deadline = Date.now() + TIME_LIMIT;
+  }
+
+  function tick() {
+    if (!playing) return;
+    var left = deadline - Date.now();
+    $("fill").style.width = Math.max(0, left / TIME_LIMIT * 100) + "%";
+    if (left <= 0) { endGame("وقتت تموم شد ⏰"); return; }
+    raf = requestAnimationFrame(tick);
+  }
+
+  function startGame() {
+    score = 0; playing = true;
+    $("score").textContent = 0;
+    $("gameWho").textContent = players[me].avatar + " " + me;
+    $("gameMsg").textContent = "";
+    $("gameMsg").className = "msg";
+    show("screenGame");
+    newQuestion();
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(tick);
+    Sound.startMusic(); // باید بعد از کلیک کاربر باشه، وگرنه مرورگر اجازه نمی‌ده
+  }
+
+  function pick(n) {
+    if (!playing) return;
+    if (n === answer) {
+      score++;
+      Sound.right();
+      Effects.pop(players[me].avatar);
+      $("gameMsg").textContent = "";
+    } else {
+      Sound.wrong();
+      Effects.wrong(players[me].avatar);
+      score = 0; // طبق قانون: جواب غلط، امتیاز صفر
+      $("gameMsg").textContent = "غلط بود! امتیازت صفر شد.";
+      $("gameMsg").className = "msg bad";
+    }
+    $("score").textContent = score;
+    newQuestion();
+  }
+
+  function endGame(reason) {
+    playing = false;
+    cancelAnimationFrame(raf);
+    Sound.stopMusic();
+    var p = players[me];
+    var record = score > p.best;
+    if (record) { p.best = score; save(players); }
+    $("overReason").textContent = reason;
+    $("overScore").textContent = score;
+    $("overBest").textContent = record ? "رکورد جدید! 🎉" : "بهترین امتیاز: " + p.best;
+    // اول افکت میوه‌ای، بعد از تمیز شدن صفحه، صفحه‌ی امتیاز میاد
+    var next = function () { show("screenOver"); };
+    if (record) { Sound.win(); Effects.burst(p.avatar, next); }
+    else { Sound.over(); Effects.splat(p.avatar, next, Sound.splat); }
+  }
+
+  // دکمه‌های عددی ۰ تا ۹
+  var pad = $("pad");
+  for (var i = 0; i <= 9; i++) {
+    (function (n) {
+      var b = document.createElement("button");
+      b.type = "button"; b.textContent = n;
+      b.onclick = function () { pick(n); };
+      pad.appendChild(b);
+    })(i);
+  }
+  // صفحه‌کلید
+  document.addEventListener("keydown", function (e) {
+    if (!playing) return;
+    // از e.code استفاده می‌کنیم تا با کیبورد فارسی (۰ تا ۹) هم کار کنه
+    var m = /^(?:Digit|Numpad)([0-9])$/.exec(e.code || "");
+    if (m) pick(parseInt(m[1], 10));
+  });
+
+  function showMuteIcon() { $("muteBtn").textContent = Sound.isMuted() ? "🔇" : "🔊"; }
+  $("muteBtn").onclick = function () { Sound.toggle(); showMuteIcon(); };
+  showMuteIcon();
+
+  $("startBtn").onclick = startGame;
+  $("againBtn").onclick = startGame;
+
+  // ---------- شروع ----------
+  renderAvatars();
+  if (me) goHome(); else show("screenProfile");
+})();
+</script>
+<script>
+// بستن لودینگ بعد از حدود ۴.۵ ثانیه
+setTimeout(function () {
+  var sp = document.getElementById("splash");
+  if (!sp) return;
+  sp.className += " out";
+  setTimeout(function () { sp.style.display = "none"; }, 600);
+}, 4500);
+</script>
+</body>
+</html>
